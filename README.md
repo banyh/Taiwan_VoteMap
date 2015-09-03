@@ -2,16 +2,11 @@
 ======================================================
 
 * `Output`: 用來放輸出的pdf、png、或html檔
-* `Taiwan_Map`: 各行政區的界線，如果要自行下載，底下有網址
-	* `Level1_1031225_big5.*`: [縣(市)行政區域界線](http://data.gov.tw/node/7442)
-	* `Level2_1031225_big5.*`: [鄉(鎮、市、區)行政區域界線](http://data.gov.tw/node/7441)
-	* `Village_NLSC_TWD97_1040624.*`: [村里界圖(WGS84經緯度)](http://data.gov.tw/node/7438)
-	* `Shape.RDS`: R讀入shape file後，再重新用自己的格式儲存，讀取速度較快
+* `Taiwan_Map`
 	* `parse_mapdata.R`: 負責處理地圖及畫地圖的function
-* `Taiwan_Region`: 與行政區代碼有關的資料
+* `Taiwan_Region`
 	* `region_name.xml`: 各行政區的代碼對照
-* `Taiwan_voteData`: [中選會選舉資料庫的原始資料](http://data.gov.tw/node/13119)
-	* `格式說明.doc`: 中選會提供的說明文件
+* `Taiwan_voteData`
 	* `parse_votedata.R`: 負責將投票率讀出並轉換成顏色
 * `Taiwan_VoteMap.R`: 主程式，利用`parse_votedata.R`產生顏色，利用`parse_mapdata.R`畫出地圖
 
@@ -26,17 +21,25 @@
 2. 安裝R (或加上R Studio) [參考用的安裝教學]
 (http://www.dotblogs.com.tw/michael80321/archive/2014/12/15/147656.aspx)
 
-3. 修改`Taiwan_VoteMap.R`
+3. 下載地圖並解壓縮到`Taiwan_Map`目錄
+
+	* `Level1_1031225_big5.*`: [縣(市)行政區域界線](http://data.gov.tw/node/7442)
+	* `Level2_1031225_big5.*`: [鄉(鎮、市、區)行政區域界線](http://data.gov.tw/node/7441)
+	* `Village_NLSC_TWD97_1040624.*`: [村里界圖(WGS84經緯度)](http://data.gov.tw/node/7438)
+
+4. 下載[中選會選舉資料庫](http://data.gov.tw/node/13119)並解壓縮到`Taiwan_voteData`目錄
+
+5. 修改`Taiwan_VoteMap.R`
 
 	在第一行加上`setwd("你的原始碼目錄")`，例如`setwd("d:/Project/Map")`
 
-4. 在R Studio中執行`source('D:/Project/Taiwan_VoteMap/Taiwan_VoteMap.R', encoding = 'UTF-8')`
+6. 在R Studio中執行`source('D:/Project/Taiwan_VoteMap/Taiwan_VoteMap.R', encoding = 'UTF-8')`
 	或是打開`Taiwan_VoteMap.R`後，按上方的Source按鈕
 
 	* 有缺少的library應該會自動安裝
 	* 會看到一連串載入library的訊息
 
-5. library載入完後會出現以下訊息
+7. library載入完後會出現以下訊息
 
 	```
 	  1: 2009_2010_mayor
@@ -57,7 +60,10 @@
 	* councilors代表議員選舉
 	* lagislator代表區域立委選舉
 
-6. 選擇後會出現以下訊息
+8. 第一次執行時，先不要輸入選擇，直接按ENTER離開。
+	呼叫`prepare_map()`將Shape file轉換成RDS檔(只需要作一次)
+
+9. 再執行一次`source('D:/Project/Taiwan_VoteMap/Taiwan_VoteMap.R', encoding = 'UTF-8')`，選擇9後會出現以下訊息
 
 	```
 	你選擇了 2014_village
@@ -65,7 +71,7 @@
 	```
 	* 這時已經產生`col_vote`物件，裡面包含顏色資料`COLOR`及得票率資料`VOTE`
 
-7. 執行`map$plotGG`來產生圖形
+9. 執行`map$plotGG`來產生圖形
 
 	* `g <- map$plotGG(1, col_vote$COLOR)`
 		產生縣市等級的地圖，著色資料來自col_vote$COLOR
@@ -79,7 +85,7 @@
 		產生村里等級的地圖，範圍限定為板橋區
 	* 詳細的參數說明請參考`parse_mapdata.R`
 
-8. 執行`map$plotLeaflet`來產生互動式地圖(html+json的組合)
+10. 執行`map$plotLeaflet`來產生互動式地圖(html+json的組合)
 
 	* `map$plotLeaflet(1, COLOR)` 產生縣市等級地圖
 	* `map$plotLeaflet(2, COLOR)` 產生鄉鎮等級地圖

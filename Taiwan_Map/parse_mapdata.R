@@ -32,9 +32,10 @@ require(leafletR)
 #		plot_map(3, COLOR, village_select = "山崙里")
 #   d. 需要產生同樣大小的圖檔，可用 png_width, png_height 指定大小 (單位=inch, 600dpi)
 
+#
 # 為了節省時間，預先處理地圖檔，通常只有第一次需要執行
-# 1.讀取SHR檔，並將SpatialPolygonsDataFrame物件存入檔案中
-# 2.預先產生GeoJSON，供leafletR使用，這個步驟要花10分鐘以上，請耐心等侯
+# 讀取SHR檔，並將SpatialPolygonsDataFrame物件存入檔案中
+#
 prepare_map <- function()
 {
 	sh <- list()
@@ -104,6 +105,13 @@ prepare_map <- function()
 	saveRDS(sh, "Taiwan_Map/Shape.RDS")
 }
 
+#
+# 傳回list，包含四個函式
+#	plotBase: 用base graphic畫地圖
+#	plotGG: 用ggplot2畫地圖
+#	plotLeaflet: 輸出html及json檔
+#	exportKML: 輸出KML檔
+#
 generate_map <- function()
 {
 	options(encoding = "utf8")	# 必須設為utf8，toGeoJSON才能正確運作
