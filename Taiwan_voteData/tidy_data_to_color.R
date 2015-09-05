@@ -1,6 +1,6 @@
 require(dplyr)
 
-ctkparty <- read.csv("hello.csv", fileEncoding = "utf8")
+ctkparty <- vote_tidy_data(dir)
 
 FilterMaxVote <- function(x) filter(x, rank(-GetVote)==1)
 FilterParty <- function(x, party) filter(x, PartyName==party)
