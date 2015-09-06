@@ -4,30 +4,6 @@ require(XML)
 require(stringr)
 require(jsonlite)
 
-#dir <- c("Taiwan_voteData/1996年9任總統")
-#dir <- c("Taiwan_voteData/1998年4屆立委/區域")
-#dir <- c("Taiwan_voteData/1998年直轄市長", "Taiwan_voteData/1997年縣市長")
-#dir <- c("Taiwan_voteData/1998年縣市議員/區域", "Taiwan_voteData/1998年直轄市議員/區域")
-#dir <- c("Taiwan_voteData/2000年10任總統")
-#dir <- c("Taiwan_voteData/2001年5屆立委/區域")
-#dir <- c("Taiwan_voteData/2002年直轄市長", "Taiwan_voteData/2001年縣市長")
-#dir <- c("Taiwan_voteData/2002年直轄市議員(區域)", "Taiwan_voteData/2002年縣市議員/區域")
-#dir <- c("Taiwan_voteData/2004年11任總統")
-#dir <- c("Taiwan_voteData/2004年第6屆立法委員/區域")
-#dir <- c("Taiwan_voteData/2006年直轄市長", "Taiwan_voteData/2005年縣市長")
-#dir <- c("Taiwan_voteData/2006年直轄市議員(區域)", "Taiwan_voteData/2005年縣市議員/區域")
-#dir <- c("Taiwan_voteData/2008年立委/區域")
-#dir <- c("Taiwan_voteData/2008年立委/不分區政黨")
-#dir <- c("Taiwan_voteData/2008年總統")
-#dir <- c("Taiwan_voteData/2010年都市長議員及里長/市長", "Taiwan_voteData/2009年縣市長縣市議員及鄉鎮長/縣市長")
-#dir <- c("Taiwan_voteData/2010年都市長議員及里長/區域議員", "Taiwan_voteData/2009年縣市長縣市議員及鄉鎮長/區域議員")
-#dir <- c("Taiwan_voteData/2012年總統及立委/不分區政黨")
-#dir <- c("Taiwan_voteData/2012年總統及立委/區域立委")
-#dir <- c("Taiwan_voteData/2012年總統及立委/總統")
-#dir <- c("Taiwan_voteData/2014年地方公職人員選舉/直轄市市長", "Taiwan_voteData/2014年地方公職人員選舉/縣市市長")
-#dir <- c("Taiwan_voteData/2014年地方公職人員選舉/直轄市區域議員", "Taiwan_voteData/2014年地方公職人員選舉/縣市區域議員")
-#dir <- c("Taiwan_voteData/2014年地方公職人員選舉/直轄市山原議員", "Taiwan_voteData/2014年地方公職人員選舉/縣市山原議員")
-
 #
 # Description: 將選舉資料整理出鄉鎮市等級的部分
 # dir:      存放選舉資料的位置，例如 "Taiwan_voteData/2012年總統及立委/總統"
@@ -58,15 +34,6 @@ vote_tidy_data <- function(dir, saveType = "")
 			政黨 = grepl("政黨$", dir[1])
 		)
 	year <- as.numeric(sub(".*(\\d{4})年.*", "\\1", dir[1]))
-
-	#------------------ Load Region ID ----------------------------------
-
-	r <- xmlRoot(xmlTreeParse("Taiwan_Region/region_name.xml", useInternalNodes = TRUE))
-	region_id <- str_replace_all(xpathSApply(r, "//Code", xmlValue), "\\t", "")
-	names(region_id) <- str_replace_all(xpathSApply(r, "//Content", xmlValue), "\\t", "")
-	region_name <- names(region_id)
-	names(region_name) <- region_id
-	rm(r)
 
 	#------------------ Load Region Data -------------------------------
 
@@ -165,6 +132,8 @@ vote_tidy_data <- function(dir, saveType = "")
 		ty <- i.base %>% filter(Village == "臺中縣")
 		all_ty <- i.base$LV1a == ty$LV1a & i.base$LV1b == ty$LV1b & i.base$LV3 == 0
 		i.base$Village[all_ty] <- sub("(..)縣", "\\1市", sub("(..)(鄉|鎮|市)", "\\1區", i.base$Village[all_ty]))
+
+		i.base <- i.base %>% mutate(Village = ifelse(Village=="三民鄉", "那瑪夏區", Village))
 
 		ty <- i.base %>% filter(Village == "高雄縣")
 		all_ty <- i.base$LV1a == ty$LV1a & i.base$LV1b == ty$LV1b & i.base$LV3 == 0
